@@ -4,6 +4,7 @@ spec = {
 
 Report = {}
 Report.__index = Report
+output = decoda_output or print
 
 function Report:new(spec)
 	local report = {		
@@ -32,21 +33,21 @@ function spec:report(verbose)
 	local report = Report:new(self)
 
 	if report.num_failed == 0 and not verbose then
-		print "all tests passed"
+		output "all tests passed"
 		return
 	end
 	
 	for _, result in pairs(report.results) do
-		print(("%s\n================================"):format(result.name))
+		output(("%s\n================================"):format(result.name))
 		
 		for description, r in pairs(result.spec_results) do
 			local outcome = r.passed and 'pass' or "FAILED"
 
 			if verbose or not (verbose and r.passed) then
-				print(("%-70s [ %s ]"):format(" - " .. description, outcome))
+				output(("%-70s [ %s ]"):format(" - " .. description, outcome))
 
 				table.foreach(r.errors, function(index, error)
-					print("   ".. index..". Failed expectation : ".. error.message.."\n   "..error.trace)
+					output("   ".. index..". Failed expectation : ".. error.message.."\n   "..error.trace)
 				end)
 			end
 		end
@@ -58,7 +59,7 @@ function spec:report(verbose)
 Passed : %s, Failed : %s, Success rate : %.2f percent
 ]]
 
-	print(summary:format(report.total, report.num_passed, report.num_failed, report.percent))
+	output(summary:format(report.total, report.num_passed, report.num_failed, report.percent))
 end
 
 function spec:add_results(success, message, trace)
